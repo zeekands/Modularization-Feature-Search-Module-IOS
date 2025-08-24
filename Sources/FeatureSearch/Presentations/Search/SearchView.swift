@@ -26,7 +26,14 @@ public struct SearchView: View {
       
       ZStack(alignment: .center) {
         if viewModel.isLoading {
-          LoadingIndicator()
+          VStack {
+            Spacer()
+            LoadingIndicator()
+            Text("Searching...")
+              .foregroundColor(.textSecondary)
+              .padding(.top, 4)
+            Spacer()
+          }
         } else if let errorMessage = viewModel.errorMessage {
           ErrorView(message: errorMessage, retryAction: {
             Task { await viewModel.performSearch(query: viewModel.searchQuery) }
