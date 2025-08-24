@@ -7,8 +7,8 @@
 
 
 import SwiftUI
-import SharedDomain // For MovieEntity, TVShowEntity, AppRoute
-import SharedUI     // For LoadingIndicator, ErrorView, PosterImageView, ItemGridCell
+import SharedDomain
+import SharedUI
 
 public struct SearchView: View {
   @StateObject private var viewModel: SearchViewModel
@@ -19,26 +19,33 @@ public struct SearchView: View {
   
   public var body: some View {
     VStack {
+      // Search bar tetap berada di posisi atas
       TextField("Search movies or TV shows...", text: $viewModel.searchQuery)
         .textFieldStyle(.roundedBorder)
         .padding(.horizontal)
         .autocorrectionDisabled()
       
-      // Loading/Error/No results states
-      if viewModel.isLoading {
-        LoadingIndicator()
-      } else if let errorMessage = viewModel.errorMessage {
-        ErrorView(message: errorMessage, retryAction: {
-          Task { await viewModel.performSearch(query: viewModel.searchQuery) }
-        })
-      } else if viewModel.movieResults.isEmpty && viewModel.tvShowResults.isEmpty && !viewModel.searchQuery.isEmpty {
-        ContentUnavailableView("No Results Found", systemImage: "magnifyingglass.slash")
-          .padding()
-      } else if viewModel.searchQuery.isEmpty {
-        ContentUnavailableView("Start Typing to Search", systemImage: "text.magnifyingglass")
-          .padding()
-      } else {
-        searchResultsContent
+      // Menggunakan ZStack untuk menumpuk tampilan
+      ZStack(alignment: .center) {
+        // Tampilan utama (daftar hasil pencarian atau tampilan awal)
+        if viewModel.movieResults.isEmpty && viewModel.tvShowResults.isEmpty && !viewModel.searchQuery.isEmpty {
+          ContentUnavailableView("No Results Found", systemImage: "magnifyingglass.slash")
+            .padding()
+        } else if viewModel.searchQuery.isEmpty {
+          ContentUnavailableView("Start Typing to Search", systemImage: "text.magnifyingglass")
+            .padding()
+        } else {
+          searchResultsContent
+        }
+        
+        // Tampilan loading dan error ditampilkan di atas konten
+        if viewModel.isLoading {
+          LoadingIndicator()
+        } else if let errorMessage = viewModel.errorMessage {
+          ErrorView(message: errorMessage, retryAction: {
+            Task { await viewModel.performSearch(query: viewModel.searchQuery) }
+          })
+        }
       }
     }
     .navigationTitle("Search")
@@ -47,11 +54,10 @@ public struct SearchView: View {
   // MARK: - Search Results Content
   private var searchResultsContent: some View {
     List {
-      // Movie results
       if !viewModel.movieResults.isEmpty {
         Section("Movies") {
           ForEach(viewModel.movieResults) { movie in
-            SearchMovieRowView(movie: movie, viewModel: viewModel) // Helper View for movie row
+            SearchMovieRowView(movie: movie, viewModel: viewModel)
               .onTapGesture {
                 viewModel.navigateToMovieDetail(movieId: movie.id)
               }
@@ -66,11 +72,10 @@ public struct SearchView: View {
         }
       }
       
-      // TV Show results
       if !viewModel.tvShowResults.isEmpty {
         Section("TV Shows") {
           ForEach(viewModel.tvShowResults) { tvShow in
-            SearchTVShowRowView(tvShow: tvShow, viewModel: viewModel) // Helper View for TV show row
+            SearchTVShowRowView(tvShow: tvShow, viewModel: viewModel)
               .onTapGesture {
                 viewModel.navigateToTVShowDetail(tvShowId: tvShow.id)
               }
@@ -87,10 +92,6 @@ public struct SearchView: View {
     }
   }
 }
-
-// MARK: - Helper Views for Search Results Rows
-// These can be placed in separate files within FeatureSearch/Presentation/Search/Views/
-// or in SharedUI/Components if they are generic enough.
 
 public struct SearchMovieRowView: View {
   public let movie: MovieEntity
