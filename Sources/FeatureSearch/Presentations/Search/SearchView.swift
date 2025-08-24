@@ -19,16 +19,19 @@ public struct SearchView: View {
   
   public var body: some View {
     VStack {
-      // Search bar tetap berada di posisi atas
       TextField("Search movies or TV shows...", text: $viewModel.searchQuery)
         .textFieldStyle(.roundedBorder)
         .padding(.horizontal)
         .autocorrectionDisabled()
       
-      // Menggunakan ZStack untuk menumpuk tampilan
       ZStack(alignment: .center) {
-        // Tampilan utama (daftar hasil pencarian atau tampilan awal)
-        if viewModel.movieResults.isEmpty && viewModel.tvShowResults.isEmpty && !viewModel.searchQuery.isEmpty && viewModel.isLoading {
+        if viewModel.isLoading {
+          LoadingIndicator()
+        } else if let errorMessage = viewModel.errorMessage {
+          ErrorView(message: errorMessage, retryAction: {
+            Task { await viewModel.performSearch(query: viewModel.searchQuery) }
+          })
+        } else if viewModel.movieResults.isEmpty && viewModel.tvShowResults.isEmpty && !viewModel.searchQuery.isEmpty {
           ContentUnavailableView("No Results Found", systemImage: "magnifyingglass.slash")
             .padding()
         } else if viewModel.searchQuery.isEmpty {
@@ -36,15 +39,6 @@ public struct SearchView: View {
             .padding()
         } else {
           searchResultsContent
-        }
-        
-        // Tampilan loading dan error ditampilkan di atas konten
-        if viewModel.isLoading {
-          LoadingIndicator()
-        } else if let errorMessage = viewModel.errorMessage {
-          ErrorView(message: errorMessage, retryAction: {
-            Task { await viewModel.performSearch(query: viewModel.searchQuery) }
-          })
         }
       }
     }
