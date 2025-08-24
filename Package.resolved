@@ -1,0 +1,24 @@
+{
+  "originHash" : "93ade3d07eb41a2941cec396cedfb81027523a0c96171f1391cff1d7a776a7eb",
+  "pins" : [
+    {
+      "identity" : "modularization-domain-module-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/zeekands/Modularization-Domain-Module-IOS.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c374e095e34154390aec598af2d30f2b0f6a72b6"
+      }
+    },
+    {
+      "identity" : "modularization-ui-module-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/zeekands/Modularization-UI-Module-IOS.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "5360adc368d4ae554771971aa89ddc705827e62e"
+      }
+    }
+  ],
+  "version" : 3
+}

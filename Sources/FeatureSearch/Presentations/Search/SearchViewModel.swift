@@ -112,14 +112,21 @@ public final class SearchViewModel: ObservableObject {
             print("Error toggling TV Show favorite: \(error)")
         }
     }
-    public func navigateToMovieDetail(movieId: Int) {
+
+    func navigateToMovieDetail(movieId: Int) {
         appNavigator.dismissGlobalRoute() // Dismiss the search screen
-      appNavigator.navigate(to: .movieDetail(movieId: movieId), inTab: .movies) // Navigate to detail in movies tab
+        appNavigator.popToRoot(inTab: .movies)
+        appNavigator.selectTab(.movies)
+        appNavigator.popToRoot(inTab: .tvShows)
+        appNavigator.navigate(to: .movieDetail(movieId: movieId), inTab: .movies) // Navigate to detail in movies tab
     }
 
-    public func navigateToTVShowDetail(tvShowId: Int) {
-        appNavigator.dismissGlobalRoute() // Dismiss the search screen
-      appNavigator.navigate(to: .tvShowDetail(tvShowId: tvShowId), inTab: .tvShows) // Navigate to detail in TV shows tab
+    func navigateToTVShowDetail(tvShowId: Int) {
+        appNavigator.dismissGlobalRoute()
+        appNavigator.popToRoot(inTab: .movies)
+        appNavigator.selectTab(.tvShows)
+        appNavigator.popToRoot(inTab: .tvShows)
+        appNavigator.navigate(to: .tvShowDetail(tvShowId: tvShowId), inTab: .tvShows) // Navigate to detail in TV shows tab
     }
 
     public func dismissSearch() {

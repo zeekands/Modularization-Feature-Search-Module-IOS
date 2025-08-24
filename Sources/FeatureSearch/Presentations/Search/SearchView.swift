@@ -28,7 +28,7 @@ public struct SearchView: View {
       // Menggunakan ZStack untuk menumpuk tampilan
       ZStack(alignment: .center) {
         // Tampilan utama (daftar hasil pencarian atau tampilan awal)
-        if viewModel.movieResults.isEmpty && viewModel.tvShowResults.isEmpty && !viewModel.searchQuery.isEmpty {
+        if viewModel.movieResults.isEmpty && viewModel.tvShowResults.isEmpty && !viewModel.searchQuery.isEmpty && viewModel.isLoading {
           ContentUnavailableView("No Results Found", systemImage: "magnifyingglass.slash")
             .padding()
         } else if viewModel.searchQuery.isEmpty {
